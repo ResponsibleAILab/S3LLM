@@ -43,7 +43,7 @@ def load_prompt_for_document():
     return prompt 
 
 def load_prompt_for_dot_metadata():
-    template = """Use the provided context to answer the user's question. if you don't know answer then return to "I don't know"".
+    template = """If the user ask for any of the above DOT queries, return the generated corresponding answer from the database."".
     Context: {context}
     Question: {question}
     Answer:
@@ -63,7 +63,7 @@ def load_prompt_for_spel_metadata():
 
 def load_prompt_for_FQL():
 
-    template = """If the user ask for any of the above FQL(Feature Query Language) queries, return the generated corresponding query from the database.".
+    template = """If the user ask for any of the above FQL queries, return the generated corresponding FQL from the database.".
     Context: {context}
     Question: {question}
     Answer:
@@ -85,7 +85,7 @@ def chain_QA(db_location, promt_pass):
     llm = loading_LLM()
     vdb = vector_storage_by_index(db_location)
     prompt = promt_pass
-    retriever = vdb.as_retriever(search_kwargs={'k': 4}) # k is nearest neibhours in vector database search
+    retriever = vdb.as_retriever(search_kwargs={'k': 2}) # k is nearest neibhours in vector database search
     chain_return = RetrievalQA.from_chain_type(llm=llm,
                                            chain_type='stuff',
                                            retriever=retriever,
