@@ -1,4 +1,3 @@
-```markdown
 # S3LLM - Simplifying Scientific Software with LLMs
 
 ## Overview
