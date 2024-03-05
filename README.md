@@ -1,8 +1,8 @@
-# S3LLM - Simplifying Scientific Software with LLMs
+# S3LLM - Large-S cale S cientific S oftware Understanding with LLMs using Source, Metadata, and Document
 
 ## Overview
 
-S3LLM is an integral component of the HOLOSCAN project, designed to revolutionize the way we interact with large-scale scientific software. It employs advanced Large Language Models (LLMs), specifically leveraging the open-source LLaMA-2 models, to facilitate an intuitive, conversational interface for exploring and understanding complex codebases. This innovative tool transforms natural language queries into Feature Query Language (FQL) queries, enabling efficient navigation and comprehension of extensive software ecosystems, including their code, metadata, and associated documentation.
+S3LLM is designed to revolutionize the way we interact with large-scale scientific software. It employs advanced Large Language Models (LLMs), specifically leveraging the open-source LLaMA-2 models, to facilitate an intuitive, conversational interface for exploring and understanding complex codebases. This innovative tool transforms natural language queries into Feature Query Language (FQL) queries, enabling efficient navigation and comprehension of extensive software ecosystems, including their code, metadata, and associated documentation.
 
 ## Abstract
 
