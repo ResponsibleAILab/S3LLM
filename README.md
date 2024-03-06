@@ -1,4 +1,4 @@
-# S3LLM - Large-S cale S cientific S oftware Understanding with LLMs using Source, Metadata, and Document
+# S3LLM - Large-*S*cale *S*cientific *S*oftware Understanding with LLMs using Source, Metadata, and Document
 
 ## Overview
 
