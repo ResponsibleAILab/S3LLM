@@ -9,6 +9,8 @@ from PyPDF2 import PdfReader
 from glob import glob
 import pickle
 import sys
+import torch
+from ctransformers import AutoModelForCausalLM #gpu
 
 # download LLaMA2 7B, 13B and 70B
 # wget ./../models/https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML/resolve/main/llama-2-7b-chat.ggmlv3.q8_0.bin?download=true
@@ -16,9 +18,12 @@ import sys
 # wget ./../models/https://huggingface.co/TheBloke/Llama-2-70B-Chat-GGML/resolve/main/llama-2-70b-chat.ggmlv3.q5_K_M.bin?download=true
  
 
-# LLaMA_model = '/mnt/local/model/llama-2-70b-chat.ggmlv3.q5_K_M.bin'
-LLaMA_model = "/mnt/local/model/llama-2-13b-chat.ggmlv3.q8_0.bin"
+# LLaMA_model = '/mnt/DATA/madara/llama2/llama-2-70b-chat.ggmlv3.q5_K_M.bin?download=true'
+LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.ggmlv3.q8_0.bin"
 # LLaMA_model = "/mnt/local/model/llama-2-7b-chat.ggmlv3.q8_0.bin"
+
+config = {'max_new_tokens': 512, 'repetition_penalty': 1.1, 
+          'temperature': 0.01, 'stream': True}
 
 def loading_LLM():
     llm = CTransformers(model = LLaMA_model,
@@ -26,12 +31,64 @@ def loading_LLM():
                         config = {'max_new_tokens': 256, 'temperature': 0}) #temprature 0.01 for different results
     return llm
 
+
+# def loading_LLM():
+#     select_gpu_layers = 21
+
+#     llm = AutoModelForCausalLM.from_pretrained(
+#         LLaMA_model,
+#         model_type="llama",
+#         gpu_layers=select_gpu_layers,
+#         **config
+#     )
+
+#     return llm
+
+# def getLLamaresponse(input_text):
+#     llm = CTransformers(model = cfg.LLaMA_model,
+#                         model_type = cfg.MODEL_TYPE,
+#                         config = {'max_new_tokens': cfg.MAX_NEW_TOKENS, 'temperature': cfg.TEMPERATURE, 'gpu_layers': 24}) #for individual chat with LLM
+#     response = llm.invoke(input_text)
+#     return response
+
 def getLLamaresponse(input_text):
-    llm = CTransformers(model = LLaMA_model,
-                        model_type = 'llama',
-                        config = {'max_new_tokens': 256, 'temperature': 0}) #for individual chat with LLM
-    response = llm.invoke(input_text)
+    select_gpu_layers = 40 #110 for 7B, 130 for 13B, 25 for 70B
+    # print("test gpu layer on " + str(select_layer))
+    llm = AutoModelForCausalLM.from_pretrained(
+        LLaMA_model, 
+        model_type="llama",                                           
+        gpu_layers=select_gpu_layers, 
+        #lib='avx2', for cpu use
+        **config
+        )    
+    tokens  = llm.tokenize(input_text)
+    response = llm(input_text, stream=False)
     return response
+    # llm = ""
+    # for i in range(5, 150):
+    #     select_layer = i
+    #     print("test gpu layer on " + str(select_layer))
+    #     llm = AutoModelForCausalLM.from_pretrained(
+    #         LLaMA_model, 
+    #         model_type="llama",                                           
+    #         #lib='avx2', for cpu use
+    #         gpu_layers=select_layer, #110 for 7b, 130 for 13b
+    #         **config
+    #         )    
+    #     tokens  = llm.tokenize(input_text)
+    # response = llm(input_text, stream=False)
+
+
+
+# llm = AutoModelForCausalLM.from_pretrained(
+#       model_id, 
+#       model_type="llama",                                           
+#       #lib='avx2', for cpu use
+#       gpu_layers=130, #110 for 7b, 130 for 13b
+#       **config
+#       )
+
+
 
 def load_prompt_for_document():
     template = """Use the provided context to answer the user's question. if you don't know answer then return "I don't know".
@@ -76,7 +133,7 @@ def load_prompt_for_FQL():
 def vector_storage_by_index(db_location):
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={'device': 'cpu'}) #TODO: change to GPU
+        model_kwargs={'device': 'cuda'}) #TODO: change to GPU
     vdb = FAISS.load_local(db_location, embeddings)
     return vdb
 
@@ -92,6 +149,7 @@ def chain_QA(db_location, promt_pass):
                                            return_source_documents=True,
                                            chain_type_kwargs={'prompt': prompt})
     return chain_return
+
 
 def get_response(query, chain_res):
     return chain_res({'query': query})['result']
