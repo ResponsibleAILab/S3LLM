@@ -32,28 +32,11 @@ def loading_LLM():
     return llm
 
 
-# def loading_LLM():
-#     select_gpu_layers = 21
 
-#     llm = AutoModelForCausalLM.from_pretrained(
-#         LLaMA_model,
-#         model_type="llama",
-#         gpu_layers=select_gpu_layers,
-#         **config
-#     )
 
-#     return llm
-
-# def getLLamaresponse(input_text):
-#     llm = CTransformers(model = cfg.LLaMA_model,
-#                         model_type = cfg.MODEL_TYPE,
-#                         config = {'max_new_tokens': cfg.MAX_NEW_TOKENS, 'temperature': cfg.TEMPERATURE, 'gpu_layers': 24}) #for individual chat with LLM
-#     response = llm.invoke(input_text)
-#     return response
 
 def getLLamaresponse(input_text):
     select_gpu_layers = 40 #110 for 7B, 130 for 13B, 25 for 70B
-    # print("test gpu layer on " + str(select_layer))
     llm = AutoModelForCausalLM.from_pretrained(
         LLaMA_model, 
         model_type="llama",                                           
@@ -64,29 +47,7 @@ def getLLamaresponse(input_text):
     tokens  = llm.tokenize(input_text)
     response = llm(input_text, stream=False)
     return response
-    # llm = ""
-    # for i in range(5, 150):
-    #     select_layer = i
-    #     print("test gpu layer on " + str(select_layer))
-    #     llm = AutoModelForCausalLM.from_pretrained(
-    #         LLaMA_model, 
-    #         model_type="llama",                                           
-    #         #lib='avx2', for cpu use
-    #         gpu_layers=select_layer, #110 for 7b, 130 for 13b
-    #         **config
-    #         )    
-    #     tokens  = llm.tokenize(input_text)
-    # response = llm(input_text, stream=False)
 
-
-
-# llm = AutoModelForCausalLM.from_pretrained(
-#       model_id, 
-#       model_type="llama",                                           
-#       #lib='avx2', for cpu use
-#       gpu_layers=130, #110 for 7b, 130 for 13b
-#       **config
-#       )
 
 
 

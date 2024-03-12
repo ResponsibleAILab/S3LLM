@@ -1,77 +1,130 @@
-from langchain.document_loaders import PyPDFLoader, DirectoryLoader
+from langchain.llms import LlamaCpp
+from langchain.chains import LLMChain
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.prompts import PromptTemplate
+from langchain.document_loaders import PyPDFLoader
+from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from langchain.prompts import PromptTemplate
 from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.document_loaders import PyPDFLoader, DirectoryLoader, TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from PyPDF2 import PdfReader
+from glob import glob
 
-DB_FAISS_PATH = 'vectorstore/db_faiss'
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+n_gpu_layers = 40 
+n_batch = 512
 
-custom_prompt_template = """Use the following pieces of information to answer the user's question.
-If you don't know the answer, just say that you don't know, don't try to make up an answer.
+llm = LlamaCpp(
+    model_path="/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=true",
+    max_tokens=512,
+    temperature=0.0,
+    n_gpu_layers=n_gpu_layers,
+    n_batch=n_batch,
+    top_p=1,
+    n_ctx=6000,
+    repeat_penalty=1.2,
+    callback_manager=callback_manager, 
+    verbose=True
+)
 
-Context: {context}
-Question: {question}
 
-Only return the helpful answer below and nothing else.
-Helpful answer:
-"""
 
-def set_custom_prompt():
+def load_prompt_for_document():
+    template = """Use the provided context to answer the user's question. if you don't know answer then return "I don't know".
+    Context: {context}
+    Question: {question}
+    Answer:
     """
-    Prompt template for QA retrieval for each vectorstore.
-    """
-    prompt = PromptTemplate(template=custom_prompt_template,
-                            input_variables=['context', 'question'])
-    return prompt
+    prompt = PromptTemplate(template=template, input_variables=['context', 'question'])
+    return prompt 
 
-def retrieval_qa_chain(llm, prompt, db):
+def load_prompt_for_dot_metadata():
+    template = """If the user ask for any of the above DOT queries, return the generated corresponding answer from the database."".
+    Context: {context}
+    Question: {question}
+    Answer:
     """
-    Initializes the RetrievalQA chain with the provided LLM, prompt, and database.
+    prompt = PromptTemplate(template=template, input_variables=['context', 'question'])
+    return prompt 
+
+def load_prompt_for_spel_metadata():
+    template = """Use the provided context to answer the user's question. if you don't know answer then return to "I don't know"".
+    Context: {context}
+    Question: {question}
+    Answer:
     """
-    qa_chain = RetrievalQA.from_chain_type(llm=llm,
+    prompt = PromptTemplate(template=template, input_variables=['context', 'question'])
+    return prompt 
+
+
+def load_prompt_for_FQL():
+
+    template = """If the user ask for any of the above FQL queries, return the generated corresponding FQL from the database.".
+    Context: {context}
+    Question: {question}
+    Answer:
+    """
+
+    prompt = PromptTemplate(template=template, input_variables=['context', 'question'])
+    return prompt 
+
+
+def vector_storage_by_index(db_location):
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={'device': 'cuda'}) #TODO: change to GPU
+    vdb = FAISS.load_local(db_location, embeddings)
+    return vdb
+
+
+def chain_QA(db_location, promt_pass):
+    vdb = vector_storage_by_index(db_location)
+    prompt = promt_pass
+    retriever = vdb.as_retriever(search_kwargs={'k': 2}) # k is nearest neibhours in vector database search
+    chain_return = RetrievalQA.from_chain_type(llm=llm,
                                            chain_type='stuff',
-                                           retriever=db.as_retriever(search_kwargs={'k': 2}),
+                                           retriever=retriever,
                                            return_source_documents=True,
                                            chain_type_kwargs={'prompt': prompt})
-    return qa_chain
+    return chain_return
 
-def load_llm():
-    """
-    Loads the language model.
-    """
-    llm = CTransformers(
-        model="TheBloke/Llama-2-7B-Chat-GGML",
-        model_type="llama",
-        max_new_tokens=512,
-        temperature=0.5
-    )
-    return llm
 
-def qa_bot():
-    """
-    Sets up the QA model by initializing embeddings, the database, the LLM, and the QA chain.
-    """
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",
-                                       model_kwargs={'device': 'cpu'})
-    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
-    llm = load_llm()
-    qa_prompt = set_custom_prompt()
-    qa_chain = retrieval_qa_chain(llm, qa_prompt, db)
-    return qa_chain
+def get_response(query, chain_res):
+    return chain_res({'query': query})['result']
 
-def main():
-    """
-    Main function to interact with the user, get queries, and display responses.
-    """
-    qa_chain = qa_bot()  # Initialize the QA model once
-    while True:
-        user_query = input("Enter your query (or type 'exit' to quit): ")
-        if user_query.lower() == 'exit':
-            break
-        response = qa_chain({'query': user_query})
-        answer = response.get("result", "No answer found.")
-        print("Answer:", answer)
+def get_prompt_and_db_location(choice):
+    switcher = {
+        '1': ('faiss/document', load_prompt_for_document()),
+        '2': ('faiss/FQL', load_prompt_for_FQL()),
+        '3': ('faiss/dot_metadata', load_prompt_for_dot_metadata()),
+        '4': ('faiss/spel_metadata', load_prompt_for_spel_metadata())
+    }
+    return switcher.get(choice, ('', None))
 
-if __name__ == "__main__":
-    main()
+while True:
+    user_input = input('\n\nSelect an option:\n1) Document\n2) Generate FQL\n3) DOT metadata\n4) SPEL metadata\n5) Exit\n\nYour choice: ')
+
+    if user_input == '6' or user_input.lower() == 'exit':
+        break
+
+
+
+    db_location, promt_pass = get_prompt_and_db_location(user_input)
+
+    if not db_location or not promt_pass:
+        print("Invalid choice. Please select a valid option.")
+        continue
+
+    chain_qa = chain_QA(db_location, promt_pass)
+    user_query = input("\nEnter your query: ")
+
+    current_response = get_response(query=user_query, chain_res=chain_qa)
+    print(f'\nAI: {current_response}\n')
