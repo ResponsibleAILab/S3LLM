@@ -1,4 +1,4 @@
-# S3LLM - Large-*S*cale *S*cientific *S*oftware Understanding with LLMs using Source, Metadata, and Document
+## S3LLM: Enhancing Scientific Software Comprehension with Large Language Models through Code, Metadata, and Documentation Analysis
 
 ## Overview
 
@@ -22,5 +22,5 @@ Ensure you have Python 3.9 or higher installed on your machine. Follow these ste
    If you encounter any issues with GPU connectivity, try reinstalling the transformers library with the following command:
 
    ```bash
-   !CT_CUBLAS=1 pip install ctransformers --no-binary ctransformers
+   !CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir --verbose
    ```
