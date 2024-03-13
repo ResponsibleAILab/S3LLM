@@ -31,19 +31,23 @@ LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=tru
 # LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-70b-chat.Q5_K_M.gguf"
 
 
-llm = LlamaCpp(
-    model_path=LLaMA_model,
-    max_tokens=512,
-    temperature=0.01,
-    n_gpu_layers=n_gpu_layers,
-    n_batch=n_batch,
-    top_p=1,
-    n_ctx=6000,
-    repeat_penalty=1.2,
-    callback_manager=callback_manager, 
-    verbose=True
-)
 
+
+def loading_LLM():
+    llm = LlamaCpp(
+        model_path=LLaMA_model,
+        max_tokens=512,
+        temperature=0.01,
+        n_gpu_layers=n_gpu_layers,
+        n_batch=n_batch,
+        top_p=1,
+        n_ctx=6000,
+        repeat_penalty=1.2,
+        callback_manager=callback_manager, 
+        verbose=True
+    )
+
+    return llm
 
 
 def load_prompt_for_document():
@@ -98,7 +102,7 @@ def chain_QA(db_location, promt_pass):
     vdb = vector_storage_by_index(db_location)
     prompt = promt_pass
     retriever = vdb.as_retriever(search_kwargs={'k': 2}) # k is nearest neibhours in vector database search
-    chain_return = RetrievalQA.from_chain_type(llm=llm,
+    chain_return = RetrievalQA.from_chain_type(llm=loading_LLM(),
                                            chain_type='stuff',
                                            retriever=retriever,
                                            return_source_documents=True,
@@ -121,7 +125,7 @@ def get_prompt_and_db_location(choice):
 while True:
     user_input = input('\n\nSelect an option:\n1) Document\n2) Generate FQL\n3) DOT metadata\n4) SPEL metadata\n5) Exit\n\nYour choice: ')
 
-    if user_input == '6' or user_input.lower() == 'exit':
+    if user_input == '5' or user_input.lower() == 'exit':
         break
 
 
