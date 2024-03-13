@@ -1,23 +1,16 @@
+Please Generate FQL to Check Whether one-sided communication is used or not => FQL => “CHECK (MPI_Put || MPI_RPut || MPI_Get || MPI_RGet) WHERE (*) “
 
-Please Generate FQL query to Check MPI or MPI => FQL => “ MAX (CHECK (MPI_AINT_ADD || MPI_AINT_DIFF) WHERE (*) AS (3.1),CHECK (MPI_COMM_DUP_WITH_INFO || MPI_COMM_SET_INFO) WHERE (*) AS (3.0),CHECK (MPI_DIST_GRAPH_CREATE_ADJACENT || MPI_DIST_GRAPH_CREATE) WHERE (*) AS (2.2), CHECK (mpi.h || use mpi || mpif.h) WHERE (*) AS (2.0)) “
+Generate FQL to Check process, topology used in the Code=> FQL => “ LIST (CHECK (MPI_CART_Create) WHERE(*) AS (Cartesian), CHECK (MPI_GRAPH_Create) WHERE(*) AS (Graph), CHECK (MPI_DIST_GRAPH_CREATE_Adjacent || MPI_DIST_GRAPH_Create) WHERE(*) AS (Distributed Graph)) “
 
-FQL to Check one-sided communication => FQL => “CHECK (MPI_Put || MPI_RPut || MPI_Get || MPI_RGet) WHERE (*) “
-
-Generate FQL to Check process, topology => FQL => “ LIST (CHECK (MPI_CART_Create) WHERE(*) AS (Cartesian), CHECK (MPI_GRAPH_Create) WHERE(*) AS (Graph), CHECK (MPI_DIST_GRAPH_CREATE_Adjacent || MPI_DIST_GRAPH_Create) WHERE(*) AS (Distributed Graph)) “
-
-FQL query to Check OpenMP used => FQL => “ CHECK (!$OMP || pragma omp) WHERE (*) AS (OpenMP) “
-
-Generate FQL to Check OpenMP, scheduling, method is used => FQL => “LIST (CHECK (schedule(static) WHERE(*) AS (Static), CHECK (schedule(dynamic) WHERE(*) AS (Dynamic), CHECK (schedule(guided)  WHERE(*) AS (Guided), CHECK (schedule(auto) WHERE(*) AS (Auto), CHECK (schedule(runtime) WHERE(*) AS (Runtime)) “
+Generate FQL to Check Whether OpenMP, scheduling, method is used in the Code or not => FQL => “LIST (CHECK (schedule(static) WHERE(*) AS (Static), CHECK (schedule(dynamic) WHERE(*) AS (Dynamic), CHECK (schedule(guided)  WHERE(*) AS (Guided), CHECK (schedule(auto) WHERE(*) AS (Auto), CHECK (schedule(runtime) WHERE(*) AS (Runtime)) “
 
 Generate FQL to Check Does it use OpenMP Task programing constructs => FQL => “CHECK (omp task || end task ||  omp taskloop || omp taskloop simd || omp taskyield) WHERE (*)”
 
-Please Generate FQL to Check Is CUDA programming used => FQL => “CHECK (__device__ ||  __global__ ||  __host__ ||  __noinline__  || __forceinline__) WHERE (*) AS (CUDA)”
+Please Generate FQL to Check Is CUDA programming used in the Code => FQL => “CHECK (__device__ ||  __global__ ||  __host__ ||  __noinline__  || __forceinline__) WHERE (*) AS (CUDA)”
 
 Generate FQL to Check it support multiple GPUs => FQL => “CHECK (cudaSetDevice || cudaGetDeviceCount || cudaGetDevice) WHERE (*) AS (MultipleGPU)”
 
-FQL query to Check Is OpenACC used => FQL => “ CHECK (!$acc || #pragma acc) WHERE (*) AS (OpenACC) ”
-
-Generate FQL to Check it use hybrid MPI/OpenMP programming => FQL => “AND (CHECK (mpi.h || use mpi || mpif.h) WHERE (*) AS (MPI), CHECK (#pragma omp) WHERE (*) AS (OpenMP)) “
+Generate FQL to Check it use hybrid MPI/OpenMP programming used in the code=> FQL => “AND (CHECK (mpi.h || use mpi || mpif.h) WHERE (*) AS (MPI), CHECK (#pragma omp) WHERE (*) AS (OpenMP)) “
 
 Please Generate FQL to Check Is MPI-IO used to do parallel IO => FQL => “CHECK (MPI_FILE_OPEN || MPI_FILE_DELETE || MPI_FILE_SET_SIZE || MPI_FILE_PREALLOCATE || MPI_FILE_GET_SIZE || MPI_FILE_GET_GROUP || MPI_FILE_GET_AMODE || MPI_FILE_SET_INFO || MPI_FILE_GET_INFO || MPI_FILE_SET_VIEW || MPI_FILE_GET_VIEW) WHERE(*) AS (MPIIO)”
 
@@ -28,6 +21,4 @@ Please Generate FQL to Check ANSI C standard is used by the software => FQL => �
 FQL query to Check Fortran standard is used by the software => FQL => “ MAX (CHECK (CODIMENSION) WHERE (.f,.f77,.f90,.f95,.f03) AS (108), CHECK (class || select type) WHERE (.f,.f77,.f90,.f95,.f03) AS (103), CHECK (FORALL || INDEPENDENT) WHERE (.f,.f77,.f90,.f95,.f03) AS (095), CHECK (end module) WHERE (.f,.f77,.f90,.f95,.f03) AS (090), CHECK (implicit none || end program) WHERE (.f,.f77,.f90,.f95,.f03) AS (077)) ”
 
 can you create FQL query to Check SSE or AVX functions used by the software => FQL => “CHECK (immintrin.h) WHERE (*) AS (SSEorAVX)”
-
-
 

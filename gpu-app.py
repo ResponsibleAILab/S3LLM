@@ -18,14 +18,23 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from PyPDF2 import PdfReader
 from glob import glob
 
+
+
+
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 n_gpu_layers = 40 
 n_batch = 512
 
+
+# LLaMA_model = '/mnt/DATA/madara/llama2/llama-2-7b-chat.Q8_0.gguf?download=true'
+LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=true"
+# LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-70b-chat.Q5_K_M.gguf"
+
+
 llm = LlamaCpp(
-    model_path="/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=true",
+    model_path=LLaMA_model,
     max_tokens=512,
-    temperature=0.0,
+    temperature=0.01,
     n_gpu_layers=n_gpu_layers,
     n_batch=n_batch,
     top_p=1,
