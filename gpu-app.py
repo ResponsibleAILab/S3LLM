@@ -1,3 +1,13 @@
+from langchain.llms import LlamaCpp
+from langchain.chains import LLMChain
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.prompts import PromptTemplate
+from langchain.document_loaders import PyPDFLoader
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from langchain.prompts import PromptTemplate
 from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
@@ -7,48 +17,37 @@ from langchain.document_loaders import PyPDFLoader, DirectoryLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from PyPDF2 import PdfReader
 from glob import glob
-import pickle
-import sys
-import torch
-from ctransformers import AutoModelForCausalLM #gpu
 
-# download LLaMA2 7B, 13B and 70B
-# wget ./../models/https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML/resolve/main/llama-2-7b-chat.ggmlv3.q8_0.bin?download=true
-# wget ./../models/https://huggingface.co/TheBloke/Llama-2-13B-chat-GGML/resolve/main/llama-2-13b-chat.ggmlv3.q8_0.bin?download=true
-# wget ./../models/https://huggingface.co/TheBloke/Llama-2-70B-Chat-GGML/resolve/main/llama-2-70b-chat.ggmlv3.q5_K_M.bin?download=true
- 
 
-# LLaMA_model = '/mnt/DATA/madara/llama2/llama-2-70b-chat.ggmlv3.q5_K_M.bin?download=true'
-LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.ggmlv3.q8_0.bin"
-# LLaMA_model = "/mnt/local/model/llama-2-7b-chat.ggmlv3.q8_0.bin"
 
-config = {'max_new_tokens': 512, 'repetition_penalty': 1.1, 
-          'temperature': 0.01, 'stream': True}
+
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+n_gpu_layers = 40 
+n_batch = 512
+
+
+# LLaMA_model = '/mnt/DATA/madara/llama2/llama-2-7b-chat.Q8_0.gguf?download=true'
+LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=true"
+# LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-70b-chat.Q5_K_M.gguf"
+
+
+
 
 def loading_LLM():
-    llm = CTransformers(model = LLaMA_model,
-                        model_type = 'llama',
-                        config = {'max_new_tokens': 256, 'temperature': 0}) #temprature 0.01 for different results
+    llm = LlamaCpp(
+        model_path=LLaMA_model,
+        max_tokens=512,
+        temperature=0.01,
+        n_gpu_layers=n_gpu_layers,
+        n_batch=n_batch,
+        top_p=1,
+        n_ctx=6000,
+        repeat_penalty=1.2,
+        callback_manager=callback_manager, 
+        verbose=True
+    )
+
     return llm
-
-
-
-
-
-def getLLamaresponse(input_text):
-    select_gpu_layers = 40 #110 for 7B, 130 for 13B, 25 for 70B
-    llm = AutoModelForCausalLM.from_pretrained(
-        LLaMA_model, 
-        model_type="llama",                                           
-        gpu_layers=select_gpu_layers, 
-        #lib='avx2', for cpu use
-        **config
-        )    
-    tokens  = llm.tokenize(input_text)
-    response = llm(input_text, stream=False)
-    return response
-
-
 
 
 def load_prompt_for_document():
@@ -100,11 +99,10 @@ def vector_storage_by_index(db_location):
 
 
 def chain_QA(db_location, promt_pass):
-    llm = loading_LLM()
     vdb = vector_storage_by_index(db_location)
     prompt = promt_pass
     retriever = vdb.as_retriever(search_kwargs={'k': 2}) # k is nearest neibhours in vector database search
-    chain_return = RetrievalQA.from_chain_type(llm=llm,
+    chain_return = RetrievalQA.from_chain_type(llm=loading_LLM(),
                                            chain_type='stuff',
                                            retriever=retriever,
                                            return_source_documents=True,
@@ -125,17 +123,12 @@ def get_prompt_and_db_location(choice):
     return switcher.get(choice, ('', None))
 
 while True:
-    user_input = input('\n\nSelect an option:\n1) Document\n2) Generate FQL\n3) DOT metadata\n4) SPEL metadata\n5) Chat with LLM\n6) Exit\n\nYour choice: ')
+    user_input = input('\n\nSelect an option:\n1) Document\n2) Generate FQL\n3) DOT metadata\n4) SPEL metadata\n5) Exit\n\nYour choice: ')
 
-    if user_input == '6' or user_input.lower() == 'exit':
+    if user_input == '5' or user_input.lower() == 'exit':
         break
 
-    if user_input == '5':
-        print("\nEnter your query for LLM: ")
-        input_text = input()
-        response = getLLamaresponse(input_text)
-        print(f"\nAI: {response}")
-        continue
+
 
     db_location, promt_pass = get_prompt_and_db_location(user_input)
 

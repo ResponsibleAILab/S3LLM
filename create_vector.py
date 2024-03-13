@@ -2,7 +2,7 @@ from langchain.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
-from langchain_community.document_loaders.csv_loader import CSVLoader
+from langchain.document_loaders.csv_loader import CSVLoader
 
 
 def start(path):
@@ -31,7 +31,8 @@ def start(path):
 
     db.save_local(vdb_path)
     
-db = ['document', 'dot_metadata', 'FQL', 'spel_metadata']
+# db = ['document', 'dot_metadata', 'FQL', 'spel_metadata']
+db = ['FQL']
 
 for i in db:
     start(path = i)
