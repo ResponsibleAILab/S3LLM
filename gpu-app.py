@@ -19,7 +19,11 @@ from PyPDF2 import PdfReader
 from glob import glob
 
 
-
+# download LLaMA2 7B, 13B and 70B for gpu
+# wget ./../models/https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf?download=true
+# wget ./../models/https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/resolve/main/llama-2-13b-chat.Q5_K_M.gguf?download=true
+# wget ./../models/https://huggingface.co/TheBloke/Llama-2-70B-Chat-GGUF/resolve/main/llama-2-70b-chat.Q5_K_M.gguf?download=true
+ 
 
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 n_gpu_layers = 40 
