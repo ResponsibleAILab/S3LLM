@@ -1,0 +1,21 @@
+Please Generate FQL query to Check Whether MPI one-sided communication is used        => FQL => "CHECK (MPI_Put || MPI_RPut || MPI_Get || MPI_RGet) WHERE (*)"
+
+Please Generate FQL query to Check Whether MPI-IO is used                             => FQL => "CHECK (MPI_FILE_OPEN || MPI_FILE_DELETE || MPI_FILE_SET_SIZE || MPI_FILE_PREALLOCATE || MPI_FILE_GET_SIZE || MPI_FILE_GET_GROUP || MPI_FILE_GET_AMODE || MPI_FILE_SET_INFO || MPI_FILE_GET_INFO || MPI_FILE_SET_VIEW || MPI_FILE_GET_VIEW) WHERE(*) AS (MPIIO)"
+
+Please Generate FQL query to Check Whether OpenMP Task programing constructs is used  => FQL => "CHECK (omp task || end task ||  omp taskloop || omp taskloop simd || omp taskyield) WHERE (*)"
+
+Please Generate FQL query to Check Whether CUDA programming is used                   => FQL => "CHECK (__device__ ||  __global__ ||  __host__ ||  __noinline__  || __forceinline__) WHERE (*) AS (CUDA)"
+
+Please Generate FQL query to Check Whether CUDA multiple GPUs coding is used          => FQL => "CHECK (cudaSetDevice || cudaGetDeviceCount || cudaGetDevice) WHERE (*) AS (MultipleGPU)"
+
+Please Generate FQL query to Check Whether SSE or AVX functions is used               => FQL => "CHECK (immintrin.h) WHERE (*) AS (SSEorAVX)"
+
+Please Generate FQL query to Check Whether OpenACC is used                            => FQL => "CHECK (!$acc || #pragma acc) WHERE (*) AS (OpenACC)"
+
+Please Generate FQL query to Find the minimum version of the ANSI C standard => FQL => "MAX (CHECK (stdnoreturn.h || stdalign.h) WHERE (*) AS (110), CHECK (stdbool.h || stdint.h) WHERE (*) AS (099), CHECK (float.h || limits.h || stdarg.h || stddef.h) WHERE (*) AS (089))"
+
+Please Generate FQL query to Find the minimum version of Fortran             => FQL => "MAX (CHECK (CODIMENSION) WHERE (.f,.f77,.f90,.f95,.f03) AS (108), CHECK (class || select type) WHERE (.f,.f77,.f90,.f95,.f03) AS (103), CHECK (FORALL || INDEPENDENT) WHERE (.f,.f77,.f90,.f95,.f03) AS (095), CHECK (end module) WHERE (.f,.f77,.f90,.f95,.f03) AS (090), CHECK (implicit none || end program) WHERE (.f,.f77,.f90,.f95,.f03) AS (077))"
+
+Please Generate FQL query to List OpenMP scheduling method used in the Code   => FQL => "LIST (CHECK (schedule(static) WHERE(*) AS (Static), CHECK (schedule(dynamic) WHERE(*) AS (Dynamic), CHECK (schedule(guided)  WHERE(*) AS (Guided), CHECK (schedule(auto) WHERE(*) AS (Auto), CHECK (schedule(runtime) WHERE(*) AS (Runtime))"
+
+Please Generate FQL query to List CUDA programming precision used in the code => FQL => "LIST (CHECK (double) WHERE (.cu,.cuh) AS (double), CHECK (float) WHERE (.cu,.cuh) AS (single))"

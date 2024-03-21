@@ -1,0 +1,41 @@
+An FQL sentence is comprised of a set of clauses. If there is one clause,
+we simply return the query result of this clause. When there are multiple
+clauses in a sentence, results from the various clauses will be summarized
+by an FQL-provided command. A sentence with multiple clauses can be
+expressed in the following form: FQL command (Clause1, Clause2, ...). 
+A clause is defined as a combination of phrases and FQL-reserved keywords. An example clause is listed as follows: CHECK (keyword phrase) WHERE (file extension phrase) AS (feature name phrase) 
+In the above grammar, CHECK, WHERE and AS are the reserved. 
+keywords in FQL. They are not case sensitive. Note that a phrase is essentially a set of strings. The first version of FQL has three kinds of phrases: 1) keyword phrase, 2) file extension phrase and 3) feature name phrase.
+
+
+!$OMP: This syntax is typically used in Fortran to denote OpenMP directives. The "!" is a comment character in Fortran, and "$OMP" signifies the start of an OpenMP directive.
+
+pragma omp: In C and C++, OpenMP directives are introduced with #pragma omp, indicating the compiler to process the following code block in parallel, according to the OpenMP standard.
+
+MPI_AINT_ADD: Adds two address integer values, useful in MPI for calculating displacements. Introduced in MPI 3.1.
+
+MPI_AINT_DIFF: Computes the difference between two address integer values, used in addressing in MPI. Introduced in MPI 3.1.
+
+MPI_COMM_DUP_WITH_INFO: Duplicates an MPI communicator with new info, allowing customization of communication properties. Introduced in MPI 3.0.
+
+MPI_COMM_SET_INFO: Attaches new info to an existing MPI communicator, influencing communication optimizations. Introduced in MPI 3.0.
+
+MPI_DIST_GRAPH_CREATE_ADJACENT: Creates a distributed graph communicator with specified neighbors for each node, enhancing data exchange patterns. Introduced in MPI 2.2.
+
+MPI_DIST_GRAPH_CREATE: Constructs a distributed graph communicator based on arbitrary graphs, optimizing communication for irregular data patterns. Introduced in MPI 2.2.
+
+mpi.h, use mpi, mpif.h: These terms refer to header files or modules used in C/C++ (mpi.h), Fortran 90 (use mpi), and Fortran 77 (mpif.h) MPI programming, indicating basic MPI support or inclusion. Introduced in MPI 2.0.
+
+MPI_CART_Create: Creates a Cartesian grid communicator. The keywords used to indicate the "Cartesian" MPI process topology.
+
+MPI_GRAPH_Create: Initiates the creation of a graph communicator. The keywords used to indicate the "Graph" MPI process topology.
+
+MPI_DIST_GRAPH_CREATE_Adjacent and MPI_DIST_GRAPH_Create: Both functions are concerned with the creation of distributed graph communicators, optimizing communication patterns among processes in distributed memory systems. The keywords used to indicate the "Distributed Graph" MPI process topology.
+
+OpenMP 2.0: An MPI version introducing more parallelism control, including dynamic threads and task scheduling.
+
+OpenMP 3.0: Enhanced version supporting task-based parallelism, allowing more flexible and dynamic work sharing.
+
+OpenMP 3.1: Minor update version, introducing features like atomic constructs improvements and non-rectangular loop support.
+
+OpenMP 4.0: Major update version, introducing device offloading, enabling computations on GPUs and other accelerators.

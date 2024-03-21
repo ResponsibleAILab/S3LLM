@@ -25,7 +25,7 @@ from glob import glob
  
 
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-n_gpu_layers = 40 
+n_gpu_layers = 25 
 n_batch = 512
 
 
@@ -38,16 +38,16 @@ LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.Q5_K_M.gguf?download=tru
 
 def loading_LLM():
     llm = LlamaCpp(
-        model_path=LLaMA_model,
-        max_tokens=512,
-        temperature=0.01,
-        n_gpu_layers=n_gpu_layers,
-        n_batch=n_batch,
-        top_p=1,
-        n_ctx=6000,
-        repeat_penalty=1.2,
-        callback_manager=callback_manager, 
-        verbose=True
+        model_path = "/mnt/DATA/madara/llama2/llama-2-13b-chat.ggmlv3.q8_0.bin",
+        max_tokens = 256,
+        temperature = 0,
+        n_gpu_layers = n_gpu_layers,
+        n_batch = n_batch,
+        top_p = 1,
+        n_ctx = 6000,
+        repeat_penalty = 1.2,
+        callback_manager = callback_manager, 
+        verbose = True
     )
 
     return llm
@@ -104,7 +104,7 @@ def vector_storage_by_index(db_location):
 def chain_QA(db_location, promt_pass):
     vdb = vector_storage_by_index(db_location)
     prompt = promt_pass
-    retriever = vdb.as_retriever(search_kwargs={'k': 2}) # k is nearest neibhours in vector database search
+    retriever = vdb.as_retriever(search_kwargs={'k': 1}) # k is nearest neibhours in vector database search
     chain_return = RetrievalQA.from_chain_type(llm=loading_LLM(),
                                            chain_type='stuff',
                                            retriever=retriever,
