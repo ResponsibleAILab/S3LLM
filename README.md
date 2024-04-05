@@ -1,4 +1,4 @@
-## S3LLM: Enhancing Scientific Software Comprehension with Large Language Models through Code, Metadata, and Documentation Analysis
+## *S3LLM*: Large-*S*cale *S*cientific *S*oftware Understanding with *LLMs* using Source, Metadata, and Document
 
 ## Overview
 
