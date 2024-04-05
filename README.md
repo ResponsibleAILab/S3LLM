@@ -1,12 +1,10 @@
 ## *S3LLM*: Large-*S*cale *S*cientific *S*oftware Understanding with *LLMs* using Source, Metadata, and Document
 
-## Overview
-
-S3LLM is designed to revolutionize the way we interact with large-scale scientific software. It employs advanced Large Language Models (LLMs), specifically leveraging the open-source LLaMA-2 models, to facilitate an intuitive, conversational interface for exploring and understanding complex codebases. This innovative tool transforms natural language queries into Feature Query Language (FQL) queries, enabling efficient navigation and comprehension of extensive software ecosystems, including their code, metadata, and associated documentation.
-
 ## Abstract
 
-The S3LLM framework addresses the intricate challenges posed by large-scale scientific software, characterized by its vast codebase and sophisticated computing architectures. By harnessing generative AI and LLMs, S3LLM offers a groundbreaking approach to decode and analyze scientific codes interactively and efficiently. It combines code analysis, metadata inspection, and technical documentation review in a unified, user-friendly platform, making the understanding of complex scientific software accessible to a broader range of users.
+The understanding of large-scale scientific software poses significant challenges due to its diverse codebase, extensive code length, and target computing architectures. The emergence of generative AI, specifically large language models (LLMs), provides novel pathways for understanding such complex scientific codes. The proposed S3LLM, an LLM-based framework designed to enable the examination of source code, code metadata, and summarized information in conjunction with textual technical reports in an interactive, conversational manner through a user-friendly interface. In particular, S3LLM utilizes open-source LLaMA-2 models to improve code analysis by converting natural language queries into Feature Query Language (FQL) queries, facilitating the quick scanning and parsing of entire code repositories. In addition, S3LLM is equipped to handle diverse metadata types, including DOT, SQL, and customized formats. Furthermore, S3LLM incorporates retrieval augmented generation (RAG) and LangChain technologies to directly query extensive documents. S3LLM demonstrates the potential of using locally deployed open-source LLMs for the rapid understanding of large-scale scientific computing software, eliminating the need for extensive coding expertise, and thereby making the process more efficient and effective.
+
+[Paper: https://arxiv.org/abs/2403.10588](https://arxiv.org/abs/2403.10588)
 
 ## Installation
 
