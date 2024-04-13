@@ -23,6 +23,15 @@ Ensure you have Python 3.9 or higher installed on your machine. Follow these ste
    !CT_CUBLAS=1 pip install ctransformers --no-binary ctransformers
    !CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir --verbose
    ```
+3. To run 
+   CPU version
+   ```bash
+   python app.py
+   ```
+   GPU version
+   ```bash
+   python gpu-app.py
+   ```
    
 ## Docker
 [S3LLM Docker Tutorial](https://github.com/ResponsibleAILab/S3LLM/blob/main/docker/S3LLM_Docker_Installation_Tutorial.pdf)

@@ -23,7 +23,7 @@ LLaMA_model = "/mnt/DATA/madara/llama2/llama-2-13b-chat.ggmlv3.q8_0.bin"
 # LLaMA_model = "/mnt/local/model/llama-2-7b-chat.ggmlv3.q8_0.bin"
 
 config = {'max_new_tokens': 512, 'repetition_penalty': 1.1, 
-          'temperature': 0.01, 'stream': True}
+          'temperature': 0.1, 'stream': True}
 
 def loading_LLM():
     llm = CTransformers(model = LLaMA_model,
