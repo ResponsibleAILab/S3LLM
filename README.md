@@ -24,6 +24,8 @@ Ensure you have Python 3.9 or higher installed on your machine. Follow these ste
    !CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir --verbose
    ```
 3. To run 
+
+
    CPU version
    ```bash
    python app.py
